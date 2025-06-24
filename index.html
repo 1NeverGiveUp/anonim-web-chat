@@ -8,7 +8,7 @@
 
     function onTelegramAuth(userData) {
       // Foydalanuvchini serverga yuboramiz
-      fetch("http://localhost:8000/api/auth", {
+      fetch("https://anonim-backend.up.railway.app/api/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userData)
@@ -29,7 +29,7 @@
       const text = document.getElementById("message").value;
       if (!text || !user) return;
 
-      fetch("http://localhost:8000/api/message", {
+      fetch("https://anonim-backend.up.railway.app/api/message", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text, user })
