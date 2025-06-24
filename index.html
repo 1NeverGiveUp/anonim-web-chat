@@ -1,69 +1,58 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Anonim Chat</title>
-<script>
-  let user = null;
+  <meta charset="UTF-8">
+  <title>Telegram Login Test</title>
+  <script>
+    window.user = null;
 
-  function onTelegramAuth(userData) {
-    console.log("Telegram login data:", userData);
+    window.onTelegramAuth = function(userData) {
+      console.log("Telegram login:", userData);
 
-    fetch("https://anonim-backend.up.railway.app/api/auth", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(userData)
-    })
-    .then(res => {
-      console.log("Auth response status:", res.status);
-      return res.json();
-    })
-    .then(data => {
-      console.log("Auth response body:", data);
-      if (data.ok) {
-        user = data.user;
-        document.getElementById("telegram-login").style.display = "none";
-        document.getElementById("chat-form").style.display = "block";
-      } else {
-        alert("Login xato");
-      }
-    })
-    .catch(err => {
-      console.error("Auth error:", err);
-      alert("Serverga ulanib bo‘lmadi!");
-    });
-  }
+      fetch("https://anonim-backend.up.railway.app/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData)
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok) {
+          window.user = data.user;
+          document.getElementById("telegram-login").style.display = "none";
+          document.getElementById("chat-form").style.display = "block";
+        } else {
+          alert("Login xato");
+        }
+      })
+      .catch(err => {
+        alert("Xatolik:", err);
+      });
+    };
 
-  function sendMessage() {
-    const text = document.getElementById("message").value;
-    if (!text || !user) return;
+    function sendMessage() {
+      const text = document.getElementById("message").value;
+      if (!text || !window.user) return;
 
-    fetch("https://anonim-backend.up.railway.app/api/message", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, user })
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.ok) {
-        alert("Xabar yuborildi!");
-        document.getElementById("message").value = "";
-      } else {
-        alert("Xabar yuborilmadi");
-      }
-    })
-    .catch(err => {
-      alert("Xatolik yuz berdi");
-      console.error(err);
-    });
-  }
-</script>
-
+      fetch("https://anonim-backend.up.railway.app/api/message", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text, user: window.user })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok) {
+          alert("Xabar yuborildi!");
+          document.getElementById("message").value = "";
+        } else {
+          alert("Xabar yuborilmadi");
+        }
+      });
+    }
+  </script>
 </head>
-<body style="font-family:sans-serif;text-align:center;padding:40px">
-  <h2>Anonim xabar yuborish</h2>
+<body style="text-align:center;padding:40px;font-family:sans-serif">
+  <h2>Anonim Chat</h2>
 
-  <!-- Telegram Login Widget -->
   <div id="telegram-login">
     <script async src="https://telegram.org/js/telegram-widget.js?7"
       data-telegram-login="AnonimWebChatbot"
@@ -75,7 +64,6 @@
     </script>
   </div>
 
-  <!-- Xabar yuborish formasi -->
   <div id="chat-form" style="display:none;margin-top:20px">
     <textarea id="message" rows="4" cols="40" placeholder="Xabaringizni yozing..."></textarea><br><br>
     <button onclick="sendMessage()">Yuborish</button>
