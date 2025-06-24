@@ -3,47 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <title>Anonim Chat</title>
-  <script>
-    let user = null;
+<script>
+  let user = null;
 
-    function onTelegramAuth(userData) {
-      // Foydalanuvchini serverga yuboramiz
-      fetch("https://anonim-backend.up.railway.app/api/auth", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userData)
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.ok) {
-          user = data.user;
-          document.getElementById("telegram-login").style.display = "none";
-          document.getElementById("chat-form").style.display = "block";
-        } else {
-          alert("Login xato");
-        }
-      });
-    }
+  function onTelegramAuth(userData) {
+    console.log("Telegram login data:", userData);
 
-    function sendMessage() {
-      const text = document.getElementById("message").value;
-      if (!text || !user) return;
+    fetch("https://anonim-backend.up.railway.app/api/auth", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(userData)
+    })
+    .then(res => {
+      console.log("Auth response status:", res.status);
+      return res.json();
+    })
+    .then(data => {
+      console.log("Auth response body:", data);
+      if (data.ok) {
+        user = data.user;
+        document.getElementById("telegram-login").style.display = "none";
+        document.getElementById("chat-form").style.display = "block";
+      } else {
+        alert("Login xato");
+      }
+    })
+    .catch(err => {
+      console.error("Auth error:", err);
+      alert("Serverga ulanib bo‘lmadi!");
+    });
+  }
+</script>
 
-      fetch("https://anonim-backend.up.railway.app/api/message", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, user })
-      }).then(res => res.json())
-        .then(data => {
-          if (data.ok) {
-            alert("Xabar yuborildi!");
-            document.getElementById("message").value = "";
-          } else {
-            alert("Xabar yuborilmadi");
-          }
-        });
-    }
-  </script>
 </head>
 <body style="font-family:sans-serif;text-align:center;padding:40px">
   <h2>Anonim xabar yuborish</h2>
