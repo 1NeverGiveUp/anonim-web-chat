@@ -33,6 +33,30 @@
       alert("Serverga ulanib bo‘lmadi!");
     });
   }
+
+  function sendMessage() {
+    const text = document.getElementById("message").value;
+    if (!text || !user) return;
+
+    fetch("https://anonim-backend.up.railway.app/api/message", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text, user })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.ok) {
+        alert("Xabar yuborildi!");
+        document.getElementById("message").value = "";
+      } else {
+        alert("Xabar yuborilmadi");
+      }
+    })
+    .catch(err => {
+      alert("Xatolik yuz berdi");
+      console.error(err);
+    });
+  }
 </script>
 
 </head>
@@ -46,7 +70,7 @@
       data-size="large"
       data-userpic="false"
       data-request-access="write"
-      data-onauth="onTelegramAuth(user)"
+      data-onauth="onTelegramAuth"
       data-lang="uz">
     </script>
   </div>
